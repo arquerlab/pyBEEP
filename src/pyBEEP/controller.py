@@ -154,7 +154,7 @@ class PotentiostatController:
             raise ValueError(
                 f"Invalid measurement mode: '{mode}'. Available modes: {[m.value for m in self._measurement_modes]}")
 
-    def _setup_measurement(self, tia_gain: int, clear_fifo: bool = False, fifo_start: bool = False):
+    def _setup_measurement(self, tia_gain: int, clear_fifo: bool = False, fifo_start: bool = False, switch_on: bool = False):
         """
         Configure and initialize the potentiostat hardware for a new measurement.
 
@@ -162,13 +162,15 @@ class PotentiostatController:
             tia_gain (int): Transimpedance amplifier gain setting.
             clear_fifo (bool, optional): Whether to clear the FIFO buffer before starting. Defaults to False.
             fifo_start (bool, optional): Whether to start the FIFO immediately. Defaults to False.
+            switch_on (bool, optional): Whether to turn on the switch. Defaults to False.
         """
         self.device.send_command(CMD['SET_TIA_GAIN'], tia_gain)
         if clear_fifo:
             self.device.send_command(CMD['CLEAR_FIFO'], 1)
         if fifo_start:
             self.device.send_command(CMD['FIFO_START'], 1)
-        self.device.send_command(CMD['SET_SWITCH'], 1)
+        if switch_on:
+            self.device.send_command(CMD['SET_SWITCH'], 1)
 
     def _run_measurement(self, write_func: Callable[[queue.Queue], None], filepath: str, waveform: BaseModel, sampling_interval: int | None):
         """
@@ -296,7 +298,7 @@ class PotentiostatController:
             n_register: int | None = 120,
     ) -> None:
 
-        self._setup_measurement(tia_gain=tia_gain, clear_fifo=True, fifo_start=True)
+        self._setup_measurement(tia_gain=tia_gain, clear_fifo=True, fifo_start=True, switch_on=False)
         params = {'busy_dly_ns': BUSSY_DLAY_NS, 'wr_err_cnt': 0, 'rd_err_cnt': 0, 'wr_dly_st': 0,
                   'rd_dly_st': 0, 'rx_tx_reg': 0, 'wr_tx_reg': 0, 'rd_tx_reg': 0, 'transmission_st': monotonic_ns()}
         
@@ -353,7 +355,7 @@ class PotentiostatController:
               [potential (in V), current (in A)]
             - Once the measurement is finished, potentiostat is switched off.
         """
-        self._setup_measurement(tia_gain=tia_gain, clear_fifo=True)
+        self._setup_measurement(tia_gain=tia_gain, clear_fifo=True, switch_on=True)
 
         params = {'busy_dly_ns': BUSSY_DLAY_NS, 'wr_err_cnt': 0, 'rd_err_cnt': 0, 'wr_dly_st': 0,
                   'rd_dly_st': 0, 'rx_tx_reg': 0, 'wr_tx_reg': 0, 'rd_tx_reg': 0, 'transmission_st': monotonic_ns()}
@@ -447,7 +449,7 @@ class PotentiostatController:
             logger.debug(f"Waveform {i} first 10 values: {value[:10]}")
         logger.debug(f"Write list first 10 values: {write_list[:10]}")
 
-        self._setup_measurement(tia_gain=tia_gain, clear_fifo=True, fifo_start=True)
+        self._setup_measurement(tia_gain=tia_gain, clear_fifo=True, fifo_start=True, switch_on=True)
 
         # Send and collect data
         i = 0
