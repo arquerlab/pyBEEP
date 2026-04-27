@@ -171,6 +171,8 @@ class PotentiostatController:
             self.device.send_command(CMD['FIFO_START'], 1)
         if switch_on:
             self.device.send_command(CMD['SET_SWITCH'], 1)
+        else:
+            self.device.send_command(CMD['SET_SWITCH'], 0)
 
     def _run_measurement(self, write_func: Callable[[queue.Queue], None], filepath: str, waveform: BaseModel, sampling_interval: int | None):
         """
