@@ -16,7 +16,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Chemistry"
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "minimalmodbus>=2.1.1",
     "numpy>=2.3.1",
@@ -49,5 +49,5 @@ venvPath = "."
 venv = ".venv"
 reportMissingImports = true
 reportMissingTypeStubs = false
-pythonVersion = "3.13"
+pythonVersion = "3.11"
 typeCheckingMode = "basic"
