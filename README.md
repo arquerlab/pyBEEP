@@ -1,12 +1,21 @@
-# pyBEEP
-
+# Potentiostat Driver - pyBEEP
 
 Welcome to **pyBEEP** – a Python library for controlling BEEP (Basic Electrochemical Experimentation Potentiostat).  
-Run common electrochemical experiments (chronoamperometry, chronopotentiometry, cyclic voltammetry, and more) with robust data logging and plotting.
+Run common electrochemical experiments (chronoamperometry, chronopotentiometry, cyclic voltammetry, and more) with 
+robust data logging and plotting.
+
+This driver is designed to be used alongside the following:
+- Potentiostat [**firmware**](https://github.com/aurelienblanc2/Potentiostat-firmware)
+- Potentiostat python package datapipeline [**potentiopipe**](https://github.com/aurelienblanc2/Potentiostat-datapipeline)
+
+If you’d like to share or explore all three related repositories together, here is a [**link**](https://github.com/stars/aurelienblanc2/lists/potentiostat)
+
+Below, an image of the Potentiostat device:
+![Potentiostat](docs/Potentiostat.png)
 
 ---
 
-## Overview
+# Overview
 
 pyBEEP provides:
 - An easy interface for running standard electrochemical experiments over serial (Modbus).
@@ -16,7 +25,23 @@ pyBEEP provides:
 
 ---
 
-## Main Functionalities
+# Table of Contents
+
+- [Main Functionalities](#main-functionalities)
+- [Installation](#installation)
+- [How to use](#how-to-use)
+  - [pyBEEP GUI](#pybeep-gui)
+  - [Examples](#examples)
+- [File Structure](#file-structure)
+- [Notes](#notes)
+- [Bugs & Support](#bugs--support)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
+
+---
+
+# Main Functionalities
 
 - **Easy experiment setup and execution:**  
   Use `PotentiostatController.apply_measurement()` to run a wide range of electrochemical experiments.
@@ -42,19 +67,39 @@ pyBEEP provides:
 
 ---
 
-## Installation
+# Installation
 
 Clone this repository and install using pip:
 
 ```bash
-git clone https://github.com/adpisa/pyBEEP.git
+git clone https://github.com/aurelienblanc2/Potentiostat-driver-pyBEEP
 cd pyBEEP
 pip install .
 ```
 
 ---
 
-## Usage
+# How to use
+
+## pyBEEP GUI
+
+After installing the package, a terminal command is available to open the pyBEEP GUI
+```bash
+pyBEEP_GUI
+```
+This function can also be called directly in Python once the package is imported
+```python
+import pyBEEP
+
+pyBEEP.launch_GUI()
+```
+
+The GUI provides a simple way to configure and run an experiment.
+
+## Examples
+
+A very simple example to start using the Potentiostat driver is provided below. Keep in mind that the [examples](https://github.com/aurelienblanc2/Potentiostat-driver-pyBEEP/tree/main/examples) 
+folder in the repository provides use cases for the different modes of the potentiostat.
 
 ```python
 from pyBEEP import PotentiostatDevice, PotentiostatController
@@ -93,56 +138,57 @@ controller.apply_measurement(
 
 ---
 
-## Requirements
-
-- Python 3.10+
-- `minimalmodbus`
-- `numpy`
-- `pydantic`
-- `matplotlib`
-- `pandas`
-
-
-Install dependencies with:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## File Structure
+# File Structure
 
 ```
 pyBEEP/
-├── project.toml                 # Project configuration (if used)
-├── pyBEEP.toml                  # Package configuration (if used)
+├── pyproject.toml               # Project configuration
 ├── README.md                    # This file
+├── docs                         # Folder for the ressources used by the README.md
+├── LICENSE                      # MIT
 ├── requirements.txt             # Python dependencies
-├── ruff.py                      # Linter/formatter config (if used)
-├── setup.py                     # Install script
+├── uv.lock                      # Lockfile used by UV for reproducible builds
+├── .pre-commit-config.yaml      # Pre-commit configuration for developing this package
 │
 ├── examples/                    # Example scripts for running experiments
 │   ├── example_CA.py
-│   ├── example_CA_TIA_test.py
+│   ├── example_CA_TIA.py
 │   ├── example_CV.py
-│   ├── example_CV_TIA_test.py
+│   ├── example_CV_TIA.py
+│   ├── example_GCV.py
 │   ├── example_LSV.py
+│   ├── example_OCP.py
 │   ├── example_PSTEP.py
-│   └── methods_examples.py
+│   └── examples_methods.py
 │
-└── src/
-    └── pyBEEP/
-        ├── constants.py         # Hardware and experiment constants
-        ├── controller.py        # High-level control and experiment logic
-        ├── device.py            # Low-level Modbus device communication
-        ├── logger.py            # Threaded data logging to file
-        ├── plotter.py           # Data plotting utilities
-        ├── utils.py             # Utility functions (e.g. file/folder selection)
-        ├── waveform_params.py   # Parameter validation for experiments
-        ├── waveforms_gal.py     # Potential-controlled waveform definitions
-        ├── waveforms_pot.py     # Current-controlled waveform definitions
-        └── __init__.py
+├── src/
+│   └── pyBEEP/
+│       ├── __init__.py 
+│       ├── controller.py        # High-level control and experiment logic
+│       ├── device.py            # Low-level Modbus device communication
+│       ├── logger.py            # Threaded data logging to file
+│       ├── plotter.py           # Data plotting utilities
+│       ├── utils
+│       │   ├── __init__.py 
+│       │   ├── utils.py            # Utility functions (e.g. file/folder selection)
+│       │   └──constants.py         # Hardware and experiment constants
+│       │
+│       ├── measurement_modes
+│       │   ├── __init__.py 
+│       │   ├── measurement_modes.py
+│       │   ├── waveform_outputs.py
+│       │   ├── waveform_params.py
+│       │   ├── waveforms_gal.py
+│       │   ├── waveforms_ocp.py
+│       │   └── waveforms_pot.py
+│       │
+│       └── gui
+│           ├── __init__.py
+│           └── main_window.py
+│
+└── tests/
+    └── test_init.py             # Test files for the proper package import check
+
 ```
 
 - **examples/** contains working scripts that demonstrate how to use pyBEEP for different types of experiments.  
@@ -150,7 +196,7 @@ pyBEEP/
 
 ---
 
-## Notes
+# Notes
 
 - Select the TIA gain (`tia_gain`) carefully to match your experimental current/potential range.
 - The library creates CSV files with timestamp, experiment type, and parameters in the filename.
@@ -158,36 +204,30 @@ pyBEEP/
 
 ---
 
-## Roadmap & Planned Features
-
-- Support for Electrochemical Impedance Spectroscopy (EIS)
-- Graphical user interface (GUI) for experiment management
-- Extended data analysis and export options
-
-See the [pending_to_add] for the latest roadmap and bug tracker.
-
----
-
-## Bugs & Support
+# Bugs & Support
 
 If you encounter a bug, have a feature request, or need help:
-- Please open an  [pending_to_add]
+- contact: aurelien.blanc@utoronto.ca
 - Or contact: adpisa@gmail.com
 
 ---
 
-## Contributing
+# Contributing
 
 Contributions are very welcome!  
 If you’d like to add features, fix bugs, or improve documentation, please submit a merge request or open an issue to discuss your ideas.
 
 ---
-## License
+
+# License
 
 MIT License
 
-## Author
+---
 
-Adrián Pinilla-Sánchez - adpisa@gmail.com
+# Author
+
+Adrián Pinilla-Sánchez - adpisa@gmail.com  
+Aurelien Blanc - aurelien.blanc@utoronto.ca
 
 ---

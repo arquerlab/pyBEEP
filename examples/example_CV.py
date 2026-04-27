@@ -1,18 +1,30 @@
 import os
-from pyBEEP import PotentiostatDevice, PotentiostatController
-from pyBEEP.plotter import plot_cv_cycles
-from pyBEEP.utils import setup_logging
+import logging
+from pyBEEP import (
+    plot_cv_cycles,
+    setup_logging,
+    connect_to_potentiostat,
+)
 
-setup_logging(level="INFO")
+setup_logging(level=logging.INFO)
 
-device = PotentiostatDevice(port='COM5', address=1)
-controller = PotentiostatController(device=device)
+controller = connect_to_potentiostat()
 
-folder = r"C:\Users\pinillas\OneDrive - ICFO\Desktop"
+folder = os.path.join("results", "example_CV")
+os.makedirs(folder, exist_ok=True)
 
 # --- 3. Cyclic Voltammetry (CV) ---
 cv_file = os.path.join(folder, "test_CV.csv")
-cv_params = {"start": -0.5, "vertex1": 0.5, "vertex2": -0.5, "end": 0.5, "scan_rate": 0.5, "cycles": 2}
-controller.apply_measurement(mode="CV", params=cv_params, tia_gain=0, filename="test_CV.csv", folder=folder)
+cv_params = {
+    "start": -0.5,
+    "vertex1": 0.5,
+    "vertex2": -0.5,
+    "end": 0.5,
+    "scan_rate": 0.5,
+    "cycles": 2,
+}
+controller.apply_measurement(
+    mode="CV", params=cv_params, tia_gain=0, filename="test_CV.csv", folder=folder
+)
 # If you know scan_points per cycle, set it below:
-plot_cv_cycles(cv_file, figpath=cv_file.replace('.csv', '.png'), show=True, cycles=2)
+plot_cv_cycles(cv_file, figpath=cv_file.replace(".csv", ".png"), show=True, cycles=2)
