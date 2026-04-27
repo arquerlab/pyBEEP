@@ -397,7 +397,7 @@ class PotentiostatController:
         self,
         data_queue: Queue,
         waveform: BaseOuput,
-        tia_gain: int | None = 0,
+        tia_gain: int = 0,
         n_register: int | None = 120,
     ) -> None:
         self._setup_measurement(tia_gain=tia_gain, clear_fifo=True, fifo_start=True, switch_on=False)
@@ -438,7 +438,7 @@ class PotentiostatController:
         self,
         data_queue: Queue,
         waveform: GalvanoOutput,
-        tia_gain: int | None = 0,
+        tia_gain: int = 0,
         n_register: int | None = 120,
     ) -> None:
         """
@@ -527,7 +527,7 @@ class PotentiostatController:
         self,
         data_queue: Queue,
         waveform: PotenOutput,
-        tia_gain: int | None = 0,
+        tia_gain: int = 0,
         n_register: int = 120,
     ) -> None:
         """
