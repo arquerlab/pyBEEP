@@ -482,7 +482,7 @@ class PotentiostatController:
         }
 
         global_start_ns = monotonic_ns()
-
+        step = 1
         for current, duration, length in zip(
             waveform.current_steps, waveform.duration_steps, waveform.length_steps
         ):
@@ -500,7 +500,7 @@ class PotentiostatController:
             )  # Send data
 
             # Start collecting
-            while params["rd_tx_reg"] < length:
+            while params["rd_tx_reg"] < length*step:
                 st = monotonic_ns()
                 rd_data = self._read_operation(st, params, n_register)
                 if rd_data:
@@ -508,6 +508,7 @@ class PotentiostatController:
                     data_queue.put(rd_list)
                     params["rd_tx_reg"] += len(rd_list)
                     params["rd_err_cnt"] = 0
+            step += 1
 
         self._teardown_measurement()
 
